@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.ucb.data.repository.PlanRepository
+import com.ucb.tercerparcial.navigation.AppNavigation
 import com.ucb.tercerparcial.ui.theme.HomeScreen
 import com.ucb.tercerparcial.ui.theme.TercerParcialTheme
 import com.ucb.usecases.GetPlanUseCase
@@ -24,7 +25,7 @@ class MainActivity : ComponentActivity() {
         val getPlanUseCase= GetPlanUseCase(PlanRepository())
         setContent(){
             MaterialTheme{
-                HomeScreen(getPlanUseCase)
+                AppNavigation()
             }
         }
     }

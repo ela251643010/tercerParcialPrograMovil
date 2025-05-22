@@ -41,7 +41,7 @@ import com.ucb.tercerparcial.R
 
 
 @Composable
-fun HomeScreen(getPlansUseCase: GetPlanUseCase) {
+fun HomeScreen(getPlansUseCase: GetPlanUseCase, onContinue: ()->Unit) {
     val plans = remember { getPlansUseCase() }
     var currentIndex by remember { mutableStateOf(0) }
 
@@ -133,7 +133,7 @@ fun HomeScreen(getPlansUseCase: GetPlanUseCase) {
 
         // Botón para seleccionar plan
         Button(
-            onClick = { /* Acción al seleccionar */ },
+            onClick = onContinue ,
             colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary
             )

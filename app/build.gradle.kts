@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.ads.mobile.sdk)
     implementation(project(":data"))
+    //implementation(libs.androidx.navigation.compose.jvmstubs)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -65,4 +66,15 @@ dependencies {
     implementation(project(":usecases"))
     implementation(project(":domain"))
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    //maps
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
+    implementation(libs.maps.compose.v2114)
+
+    //nav
+    implementation(libs.navigation.compose)
+
+
 }
