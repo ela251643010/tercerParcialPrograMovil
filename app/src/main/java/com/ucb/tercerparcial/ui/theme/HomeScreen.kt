@@ -1,6 +1,6 @@
 package com.ucb.tercerparcial.ui.theme
 
-import ads_mobile_sdk.h5
+
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -23,11 +23,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import com.ucb.usecases.GetPlanUseCase
 import androidx.compose.ui.Modifier
@@ -37,15 +32,18 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucb.tercerparcial.R
-
-
+import com.ucb.tercerparcial.viewModel.HomeViewModel
+import com.ucb.tercerparcial.viewModel.HomeViewModelFactory
 @Composable
-fun HomeScreen(getPlansUseCase: GetPlanUseCase, onContinue: ()->Unit) {
-    val plans = remember { getPlansUseCase() }
-    var currentIndex by remember { mutableStateOf(0) }
-
-    val plan = plans[currentIndex]
+fun HomeScreen(
+    getPlansUseCase: GetPlanUseCase,
+    onContinue: () -> Unit
+) {
+    val viewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(getPlansUseCase))
+    val plan = viewModel.currentPlan.value
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -54,24 +52,21 @@ fun HomeScreen(getPlansUseCase: GetPlanUseCase, onContinue: ()->Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Título principal
         Text(
             "Nuestros planes móviles",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.primary
         )
 
-        // Descripción del plan
         Text(
             text = "La mejor cobertura, increíbles beneficios y un compromiso con el planeta.",
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(horizontal = 16.dp),
             color = MaterialTheme.colorScheme.onBackground
         )
-        // Tarjeta del plan
+
         Card(
-            modifier = Modifier
-                .padding(vertical = 24.dp),
+            modifier = Modifier.padding(vertical = 24.dp),
             colors = androidx.compose.material3.CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
             )
@@ -95,45 +90,34 @@ fun HomeScreen(getPlansUseCase: GetPlanUseCase, onContinue: ()->Unit) {
                 )
                 Text("${plan.gb}GB", style = MaterialTheme.typography.titleMedium)
 
-         // Beneficios del plan
                 Column(
                     modifier = Modifier
                         .padding(top = 16.dp, bottom = 24.dp)
                         .align(Alignment.Start)
                 ) {
-                    Text("✓ Llamadas y SMS ilimitados", style = MaterialTheme.typography.bodyMedium)
-                    Text("✓ Hotspot. Comparte tus datos", style = MaterialTheme.typography.bodyMedium)
-                    Text("✓ Redes sociales ilimitadas incluidas", style = MaterialTheme.typography.bodyMedium)
-                    Text("✓ Arma tu plan con más apps ilimitadas", style = MaterialTheme.typography.bodyMedium)
-                    Text("✓ CO2 Negativo", style = MaterialTheme.typography.bodyMedium)
+                    Text("✓ Llamadas y SMS ilimitados")
+                    Text("✓ Hotspot. Comparte tus datos")
+                    Text("✓ Redes sociales ilimitadas incluidas")
+                    Text("✓ Arma tu plan con más apps ilimitadas")
+                    Text("✓ CO2 Negativo")
                 }
-
             }
-
         }
 
-
-        // Navegación entre planes
         Row(
             modifier = Modifier.padding(bottom = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = {
-                currentIndex = (currentIndex - 1 + plans.size) % plans.size
-            }) {
+            IconButton(onClick = { viewModel.goPrevious() }) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Anterior")
             }
-
-            IconButton(onClick = {
-                currentIndex = (currentIndex + 1) % plans.size
-            }) {
+            IconButton(onClick = { viewModel.goNext() }) {
                 Icon(Icons.Default.ArrowForward, contentDescription = "Siguiente")
             }
         }
 
-        // Botón para seleccionar plan
         Button(
-            onClick = onContinue ,
+            onClick = onContinue,
             colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary
             )
@@ -141,18 +125,15 @@ fun HomeScreen(getPlansUseCase: GetPlanUseCase, onContinue: ()->Unit) {
             Text("Quiero este plan", color = MaterialTheme.colorScheme.onPrimary)
         }
 
-        //boton para whatsapp
-        val context = LocalContext.current
+        Spacer(modifier = Modifier.size(16.dp))
 
         Row(
             horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Spacer(modifier = Modifier.weight(1f))
-
-            // WhatsApp Icon Clickable
             Image(
-                painter = painterResource(id = R.drawable.whatsapp_ic), // usa tu ícono aquí
+                painter = painterResource(id = R.drawable.whatsapp_ic),
                 contentDescription = "WhatsApp",
                 modifier = Modifier
                     .size(40.dp)
@@ -172,9 +153,7 @@ fun HomeScreen(getPlansUseCase: GetPlanUseCase, onContinue: ()->Unit) {
                         }
                     }
             )
-
             Spacer(modifier = Modifier.weight(1f))
         }
-
     }
 }

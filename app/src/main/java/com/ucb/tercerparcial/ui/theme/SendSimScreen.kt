@@ -13,8 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -24,53 +22,60 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 
+import androidx.compose.ui.Alignment
+import com.ucb.tercerparcial.viewModel.SendSimViewModel
 
 @Composable
-fun SendSimScreen() {
+fun SendSimScreen(viewModel: SendSimViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     val context = LocalContext.current
 
-    var phone by remember { mutableStateOf("") }
-    var lat by remember { mutableStateOf<Double?>(null) }
-    var lng by remember { mutableStateOf<Double?>(null) }
-
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(45.dp),
-        horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text= "Dónde enviaremos tu SIM",
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(45.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Dónde enviaremos tu SIM",
             style = MaterialTheme.typography.headlineSmall,
-           modifier= Modifier.padding(bottom = 16.dp))
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
         OutlinedTextField(
-            value = phone,
-            onValueChange = { newValue -> phone = newValue },
+            value = viewModel.phone.value,
+            onValueChange = { viewModel.updatePhone(it) },
             label = { Text("Teléfono de referencia") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(   text = "Toca el mapa para seleccionar tu ubicación:",
+        Text(
+            text = "Toca el mapa para seleccionar tu ubicación:",
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.align(Alignment.Start))
+            modifier = Modifier.align(Alignment.Start)
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
-        Box(modifier = Modifier
-            .height(300.dp)
-            .fillMaxWidth()) {
+
+        Box(
+            modifier = Modifier
+                .height(300.dp)
+                .fillMaxWidth()
+        ) {
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),
                 onMapClick = { latLng ->
-                    lat = latLng.latitude
-                    lng = latLng.longitude
+                    viewModel.updateLocation(latLng.latitude, latLng.longitude)
                 }
             ) {
+                val lat = viewModel.lat.value
+                val lng = viewModel.lng.value
+
                 if (lat != null && lng != null) {
                     Marker(
-                        state = MarkerState(position = LatLng(lat!!, lng!!)),
+                        state = MarkerState(position = LatLng(lat, lng)),
                         title = "Ubicación seleccionada"
                     )
                 }
@@ -79,18 +84,20 @@ fun SendSimScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Latitud: ${lat ?: "---"}")
-        Text("Longitud: ${lng ?: "---"}")
+        Text("Latitud: ${viewModel.lat.value ?: "---"}")
+        Text("Longitud: ${viewModel.lng.value ?: "---"}")
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = {
-                Toast
-                    .makeText(context, "Enviando SIM a lat=$lat lng=$lng tel=$phone", Toast.LENGTH_LONG)
-                    .show()
+                Toast.makeText(
+                    context,
+                    "Enviando SIM a\nlat=${viewModel.lat.value} lng=${viewModel.lng.value} tel=${viewModel.phone.value}",
+                    Toast.LENGTH_LONG
+                ).show()
             },
-            enabled = phone.isNotEmpty() && lat != null && lng != null,
+            enabled = viewModel.isValid(),
             modifier = Modifier
                 .fillMaxWidth(0.7f)
                 .height(48.dp)
@@ -99,4 +106,3 @@ fun SendSimScreen() {
         }
     }
 }
-
